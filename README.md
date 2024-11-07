@@ -16,8 +16,7 @@ and because I rather have the layout stored in an easy-to-read format, feel free
 
 ## Ideas for improvements
 - [ ] Given the current layout, automagically provide its pragma counterpart
-- [ ] Add more special buffers
-  - [ ] Help
+- [ ] Add handling for more special buffers
 - [ ] Add more actions
 - [ ] Read/Import layout from json/toml
 
