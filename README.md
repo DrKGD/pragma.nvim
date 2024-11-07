@@ -19,6 +19,10 @@ and because I rather have the layout stored in an easy-to-read format, feel free
 - [ ] Add handling for more special buffers
 - [ ] Add more actions
 - [ ] Read/Import layout from json/toml
+- [ ] More default layouts
+- [ ] More Pragma actions 
+  - [ ] Define one or more layout cycles (e.g. `[fakezen, vvh, vv]`), which provides a better solution when the user
+		cannot decide which layout is the better one
 
 
 ## Setup and Installation
@@ -52,15 +56,25 @@ return {
     },
 
     layouts = {
-      ['vhh'] =
-        require('pragma.pragma-builder').new({ 'vhh' })
+      ['fakezen'] = function()
+        return require('pragma.pragma-builder').new({ 'fakezen' })
+          :winonly   { }
+          :subdivide { select = false, alias = 'fakezen', direction = "left", width = 0.15 }
+          :subdivide { select = false, direction = "right", width = 0.15 }
+          :buffer     { strategy = "scratch", winalias = 'fakezen' }
+          :buffer     { strategy = "lastbuffer", winalias = 'root' }
+      end,
+
+      ['vhh'] = function()
+        return require('pragma.pragma-builder').new({ 'vhh' })
           :winonly   { }
           :subdivide { direction = "below", height = 0.33 }
           :subdivide { direction = "left", width = 0.4 }
-          :focus     { alias = 'root' },
+          :focus     { alias = 'root' }
+      end,
 
-      ['vvh-nvimtree-vuffer-lastused'] =
-        require('pragma.pragma-builder').new({ 'vvh-nvimtree-vuffer-lastused' })
+      ['vvh-nvimtree-vuffer-lastused'] = function()
+        return require('pragma.pragma-builder').new({ 'vvh-nvimtree-vuffer-lastused' })
           :winonly   { }
           :subdivide { direction = "left", alias = 'nvimtree', width = 40 }
           :subdivide { direction = "below", alias = 'vuffers', height = 0.35, winopts = {
@@ -71,6 +85,7 @@ return {
           :buffer     { strategy = "special", name = 'vuffers', winalias = 'vuffers'}
           :buffer     { strategy = "lastbuffer", winalias = 'root' }
           :focus     { alias = 'root' }
+      end
     }
   }
 }

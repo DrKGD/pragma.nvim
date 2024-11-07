@@ -62,7 +62,6 @@ local lup_strategy = {
 		fn = function(runtime, opts)
 			local buf = (runtime.buffers[opts.amount] or { buf = vim.api.nvim_create_buf(false, false) }).buf
 			vim.api.nvim_win_set_buf(opts.winid, buf)
-			vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(buf), 0 })
 			return true
 		end
 	},

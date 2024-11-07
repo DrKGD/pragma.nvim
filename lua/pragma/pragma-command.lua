@@ -12,6 +12,11 @@ local lup_command = {
 			if not selected then
 				vim.notify(("No layout named `%s` was found!"):format(args[1]), vim.log.levels.WARN, { title = "PragmaApply", kind = "pragma" })
 				return end
+
+			-- Evaluate once
+			if type(selected) == 'function' then
+				selected = selected()
+				layout_list[args[1]] = selected end
 			selected:apply()
 		end,
 

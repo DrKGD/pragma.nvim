@@ -3,7 +3,7 @@ local M = { }
 ---@class PragmaConfiguration
 ---@field register_command	boolean
 ---@field	action						table<string, table>
----@field	layouts						table<string, PragmaBuilder>
+---@field	layouts						table<string, function>
 
 
 ---@type PragmaConfiguration
@@ -31,15 +31,25 @@ local _default = {
 	},
 
 	layouts = {
-		['vhh'] =
-			require('pragma.pragma-builder').new({ 'vhh' })
+		['fakezen'] = function()
+			return require('pragma.pragma-builder').new({ 'fakezen' })
+				:winonly	 { }
+				:subdivide { select = false, alias = 'fakezen', direction = "left", width = 0.15 }
+				:subdivide { select = false, direction = "right", width = 0.15 }
+				:buffer		 { strategy = "scratch", winalias = 'fakezen' }
+				:buffer		 { strategy = "lastbuffer", winalias = 'root' }
+		end,
+
+		['vhh'] = function()
+			return require('pragma.pragma-builder').new({ 'vhh' })
 				:winonly	 { }
 				:subdivide { direction = "below", height = 0.33 }
 				:subdivide { direction = "left", width = 0.4 }
-				:focus		 { alias = 'root' },
+				:focus		 { alias = 'root' }
+		end,
 
-		['vvh-nvimtree-vuffer-lastused'] =
-			require('pragma.pragma-builder').new({ 'vvh-nvimtree-vuffer-lastused' })
+		['vvh-nvimtree-vuffer-lastused'] = function()
+			return require('pragma.pragma-builder').new({ 'vvh-nvimtree-vuffer-lastused' })
 				:winonly	 { }
 				:subdivide { direction = "left", alias = 'nvimtree', width = 40 }
 				:subdivide { direction = "below", alias = 'vuffers', height = 0.35, winopts = {
@@ -50,6 +60,7 @@ local _default = {
 				:buffer		 { strategy = "special", name = 'vuffers', winalias = 'vuffers'}
 				:buffer		 { strategy = "lastbuffer", winalias = 'root' }
 				:focus		 { alias = 'root' }
+		end
 	}
 }
 
