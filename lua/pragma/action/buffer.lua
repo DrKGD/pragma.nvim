@@ -93,6 +93,14 @@ local buffer_opts = {
 			validate	= function(_, opt)
 				return type(opt) == 'string' or type(opt) == 'number', "winalias should be either a string or a number"
 			end },
+
+	winfixbuf =
+		{ required	= true,
+			default		= false,
+			desc			= "Lock buffer into place",
+			validate	= function(_, opt)
+				return type(opt) == 'boolean', "winfixbuf has to be a boolean"
+			end },
 }
 
 local _meta = require('pragma.action._meta')
@@ -106,11 +114,12 @@ setmetatable(Buffer, _meta)
 ---@return MetaValues
 ---Validate which strategy should be adopted to open the buffer
 function Buffer.validate(opts, builder)
-	local fstep = _meta.validate(Buffer, buffer_opts, { strategy = opts.strategy, winalias = opts.winalias }, builder)
+	local fstep = _meta.validate(Buffer, buffer_opts, { strategy = opts.strategy, winalias = opts.winalias, winfixbuf = opts.winfixbuf }, builder)
 	local lup		= assert(lup_strategy[fstep.strategy])
 
-	opts.strategy = nil
-	opts.winalias = nil
+	opts.strategy		= nil
+	opts.winalias 	= nil
+	opts.winfixbuf	= nil
 	local sstep =_meta.validate(lup.class, lup.opts, opts, builder)
 	return vim.tbl_extend("error", fstep, sstep)
 end
@@ -123,7 +132,11 @@ function Buffer.perform(runtime, opts)
 	if not opts.winid then
 		return false, "Could not determine winid"  end
 
-	return assert(lup_strategy[opts.strategy]).fn(runtime, opts)
+	local status, msg = assert(lup_strategy[opts.strategy]).fn(runtime, opts)
+	if not status then
+		return status, msg end
+	vim.api.nvim_set_option_value("winfixbuf", opts.winfixbuf, { win = opts.winid })
+	return true
 end
 
 return Buffer

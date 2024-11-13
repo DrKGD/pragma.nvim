@@ -34,9 +34,18 @@ local _default = {
 		['fakezen'] = function()
 			return require('pragma.pragma-builder').new({ 'fakezen' })
 				:winonly	 { }
-				:subdivide { select = false, alias = 'fakezen', direction = "left", width = 0.15 }
-				:subdivide { select = false, direction = "right", width = 0.15 }
-				:buffer		 { strategy = "scratch", winalias = 'fakezen' }
+				:subdivide { select = false, alias = 'left', direction = "left", width = 0.15, winopts = {
+					number					= false,
+					relativenumber	= false,
+					statuscolumn		= ""
+				}}
+				:subdivide { select = false, alias = 'right', direction = "right", width = 0.15, winopts = {
+					number					= false,
+					relativenumber	= false,
+					statuscolumn		= ""
+				}}
+				:buffer		 { strategy = "scratch", winalias = 'left', winfixbuf = true }
+				:buffer		 { strategy = "scratch", winalias = 'right', winfixbuf = true }
 				:buffer		 { strategy = "lastbuffer", winalias = 'root' }
 		end,
 
@@ -56,8 +65,8 @@ local _default = {
 					number = false,
 					relativenumber = false,
 				}}
-				:buffer		 { strategy = "special", name = 'nvimtree', winalias = 'nvimtree' }
-				:buffer		 { strategy = "special", name = 'vuffers', winalias = 'vuffers'}
+				:buffer		 { strategy = "special", name = 'nvimtree', winalias = 'nvimtree', winfixbuf = true }
+				:buffer		 { strategy = "special", name = 'vuffers', winalias = 'vuffers', winfixbuf = true }
 				:buffer		 { strategy = "lastbuffer", winalias = 'root' }
 				:focus		 { alias = 'root' }
 		end
