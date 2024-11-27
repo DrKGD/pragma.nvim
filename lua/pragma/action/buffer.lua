@@ -15,12 +15,33 @@ local lup_strategy = {
 					validate	= function(_, opt)
 						return type(opt) == 'string', 'a string path is required'
 					end },
+
+			-- TODO: Assert these are valid window option(s)
+			-- setup buffer with buffer options
+			bufopts =
+				{ required	= false,
+					default		= { },
+					desc			= "Buffer local options",
+					validate	= function(_, opt)
+						return type(opt) == 'table'
+							and not vim.iter(opt):find(function(k) return type(k) ~= 'string' end), "bufopts should be a table of buffer options"
+					end },
 		},
 
-		fn = function(runtime, opts)
+		fn = function(_, opts)
 			local buf = vim.fn.bufadd(opts.path)
+
+			-- Apply buffer opts
+			vim.iter(opts.bufopts or { })
+				:each(function(key, opt)
+					vim.api.nvim_set_option_value(key, opt, { buf = buf })
+				end)
+
+			-- Load buffer and run FileType autocmd 
 			vim.fn.bufload(buf)
+			vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
 			vim.api.nvim_win_set_buf(opts.winid, buf)
+
 			return true
 		end
 	},

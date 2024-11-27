@@ -25,6 +25,19 @@ local _default = {
 						vuffers.close()
 						vuffers.open { win = winid }
 					return true
+				end,
+
+				['doing_tasks'] = function(winid)
+					local path	= require('doing.state').tasks.file
+					local buf		= vim.fn.bufadd(path)
+
+					-- Load buffer and run FileType autocmd 
+					vim.api.nvim_set_option_value("filetype", "doing_tasks", { buf = buf })
+					vim.fn.bufload(buf)
+					vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
+					vim.api.nvim_win_set_buf(winid, buf)
+
+					return true
 				end
 			}
 		}
@@ -57,13 +70,37 @@ local _default = {
 				:focus		 { alias = 'root' }
 		end,
 
-		['vvh-nvimtree-vuffer-lastused'] = function()
+		['vvvh-nvimtree-tasks-vuffer'] = function()
+			return require('pragma.pragma-builder').new({ 'vvh-nvimtree-vuffer-lastused' })
+				:winonly	 { }
+				:subdivide { direction = "left", alias = 'nvimtree', width = 40 }
+				:subdivide { direction = "below", alias = 'doing_tasks', height = 0.60, winopts = {
+					number					= true,
+					relativenumber	= false,
+					wrap						= true,
+					statuscolumn		= ""
+				}}
+				:subdivide { direction = "below", alias = 'vuffers', height = 0.5, winopts = {
+					number					= true,
+					relativenumber	= false,
+					statuscolumn		= "%{str2nr(line('$'))-v:lnum+1}"
+				}}
+				:buffer		 { strategy = "special", name = 'nvimtree', winalias = 'nvimtree', winfixbuf = true }
+				:buffer		 { strategy = "special", name = 'vuffers', winalias = 'vuffers', winfixbuf = true }
+				:buffer		 { strategy = "special", name = 'doing_tasks', winalias = 'doing_tasks', winfixbuf = true }
+				:buffer		 { strategy = "lastbuffer", winalias = 'root' }
+				:focus		 { alias = 'root' }
+		end,
+
+		['vvh-nvimtree-vuffer'] = function()
 			return require('pragma.pragma-builder').new({ 'vvh-nvimtree-vuffer-lastused' })
 				:winonly	 { }
 				:subdivide { direction = "left", alias = 'nvimtree', width = 40 }
 				:subdivide { direction = "below", alias = 'vuffers', height = 0.35, winopts = {
-					number = false,
-					relativenumber = false,
+					number					= true,
+					relativenumber	= false,
+					wrap						= true,
+					statuscolumn		= ""
 				}}
 				:buffer		 { strategy = "special", name = 'nvimtree', winalias = 'nvimtree', winfixbuf = true }
 				:buffer		 { strategy = "special", name = 'vuffers', winalias = 'vuffers', winfixbuf = true }
